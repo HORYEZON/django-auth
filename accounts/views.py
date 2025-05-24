@@ -6,6 +6,9 @@ from django.contrib.auth.models import User
 from .serializers import RegisterSerializer, LoginSerializer
 from rest_framework.authtoken.models import Token
 
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+
 # Registration View
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -45,3 +48,14 @@ class LoginView(APIView):
             "token": token.key,
             "message": "Login successful."
         }, status=status.HTTP_200_OK)
+
+# Logout View
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        try:
+            request.user.auth_token.delete()
+            return Response({"detail": "Logged out successfully."}, status=status.HTTP_200_OK)
+        except:
+            return Response({"detail": "Something went wrong."}, status=status.HTTP_400_BAD_REQUEST)
