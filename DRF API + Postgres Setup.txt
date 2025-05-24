@@ -1,0 +1,127 @@
+DJANGO RESTFUL FRAMEWORK API SETUP
+
+STEP 1:
+mkdir myproject
+cd myproject
+python -m venv venv
+.\venv\Scripts\activate
+[V] Never run  [D] Do not run  [R] Run once  [A] Always run  [?] Help (default is "D"): | "A"
+
+STEP 1.5:
+pip install djangorestframework
+pip install djangorestframework-simplejwt
+pip install django djangorestframework psycopg2-binary
+
+STEP 2:
+django-admin startproject config .
+python manage.py startapp accounts
+
+myproject/
+├── accounts/ -- module
+├── config/ -- main project configure
+├── manage.py -- run application
+├── venv/ -- env
+
+STEP 3 | go to config/settings.py
+
+INSTALLED_APPS = [
+    # ...
+    'rest_framework',
+    'rest_framework.authtoken',
+    'accounts, // starapp module
+]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+}
+
+________________________________________________________________________________________________________________________
+
+***CREATE DB FIRST AT POSTGRES TO MODIFIED "NAME" / "USER"
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'your_db_name',
+        'USER': 'your_db_user',
+        'PASSWORD': 'your_db_password',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    }
+}
+
+
+STEP 4 | create DB from Postgres
+
+
+ADDING SUPER USER DB
+
+Server [localhost]: psql -U postgres // "postgres" account to add db
+Database [postgres]: <ENTER>
+Port [5432]: <ENTER>
+Username [postgres]: <ENTER>
+Password: admin // password from installer
+
+postgres=# CREATE DATABASE django_auth;
+*CREATE DATABASE*
+
+postgres=# \c django_auth // to go at the created db
+*You are now connected to database "django_auth" as user "postgres".*
+django_auth=# *close shell*
+
+STEP 5 | paste this on config/settings.py
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'django_auth',
+        'USER': 'postgres',
+        'PASSWORD': 'admin',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    }
+}
+
+STEP 6 | MVC CODES - **full code is on my repo**
+
+- Serializers (accounts/serializers.py)
+- Views (accounts/views.py)
+- URLs (account/urls.py)
+
+- Project-level URL include (config/urls.py)
+
+STEP 7 | 
+python manage.py makemigrations
+python manage.py migrate
+
+
+STEP 8 | test it on postman or localhost web
+
+So your full API endpoints will be:
+Register user:
+POST http://localhost:8000/api/accounts/register/
+
+Login user:
+POST http://localhost:8000/api/accounts/login/
+
+
+
+________________________________________________________________________________________________________________________
+BONUS
+________________________________________________________________________________________________________________________
+
+Activate env | .\venv\Scripts\activate
+
+To access admin.py on web localhost | python manage.py createsuperuser
+To create a dependency list on notepad | pip freeze > requirements.txt
+To install all the dependency | pip install -r requirements.txt
+
+TO AVOID makemigrations and migrate issues
+
+python manage.py migrate --fake yourapp zero  # Fake rollback
+python manage.py migrate --fake               # Fake forward
+
+
+
